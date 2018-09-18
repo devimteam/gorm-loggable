@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"sync"
 
+	"github.com/gofrs/uuid"
 	"github.com/jinzhu/gorm"
 )
 
@@ -86,8 +87,13 @@ func (r *plugin) addRecord(scope *gorm.Scope, action string) error {
 	}
 	user, where := getUserAndWhere(scope)
 
+	id, err := uuid.NewV4()
+	if err != nil {
+		return err
+	}
+
 	cl := ChangeLog{
-		ID:           uuid.NewV4().String(),
+		ID:           id.String(),
 		ChangedBy:    user.(string),
 		ChangedWhere: where.(string),
 		Action:       action,
