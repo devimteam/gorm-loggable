@@ -6,7 +6,6 @@ import (
 	"sync"
 
 	"github.com/jinzhu/gorm"
-	"github.com/satori/go.uuid"
 )
 
 type LoggablePlugin interface {
@@ -120,10 +119,20 @@ func isLoggable(scope *gorm.Scope) (isLoggable bool) {
 }
 
 func isEnabled(scope *gorm.Scope) (isEnabled bool) {
-    if !isLoggable(scope) {
-        return false
-    }
-    return scope.Value.(LoggableInterface).Enabled()
+	li, ok := scope.Value.(LoggableInterface)
+	if ok {
+		return li.Enabled()
+	}
+
+	refVal := reflect.ValueOf(scope.Value)
+	if refVal.Kind() == reflect.Struct && refVal.CanAddr() && refVal.Addr().CanInterface() {
+		li, ok := refVal.Addr().Interface().(LoggableInterface)
+		if ok {
+			return li.Enabled()
+		}
+	}
+
+	return true
 }
 
 func (r *plugin) addCreated(scope *gorm.Scope) {
