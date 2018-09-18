@@ -24,15 +24,15 @@ type LoggableInterface interface {
 }
 
 type LoggableModel struct {
-    Disabled bool
+	Disabled bool
 }
 
-func (m LoggableModel) SetEnabled(v bool) {
+func (m *LoggableModel) SetEnabled(v bool) {
 	m.Disabled = !v
 }
 
-func (m LoggableModel) Enabled() bool {
-    return !m.Disabled
+func (m *LoggableModel) Enabled() bool {
+	return !m.Disabled
 }
 
 type JSONB []byte
