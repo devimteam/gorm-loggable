@@ -131,6 +131,13 @@ func isEnabled(scope *gorm.Scope) (isEnabled bool) {
 	}
 
 	refVal := reflect.ValueOf(scope.Value)
+	if refVal.Kind() == reflect.Ptr && !refVal.IsNil() && refVal.Elem().CanInterface() {
+		li, ok := refVal.Elem().Interface().(LoggableInterface)
+		if ok {
+			return li.Enabled()
+		}
+	}
+
 	if refVal.Kind() == reflect.Struct && refVal.CanAddr() && refVal.Addr().CanInterface() {
 		li, ok := refVal.Addr().Interface().(LoggableInterface)
 		if ok {
