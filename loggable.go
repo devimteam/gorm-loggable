@@ -25,7 +25,7 @@ type LoggableInterface interface {
 }
 
 type LoggableModel struct {
-	Disabled bool
+	Disabled bool `sql:"-"`
 }
 
 func (m *LoggableModel) SetEnabled(v bool) {
